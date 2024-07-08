@@ -1,66 +1,69 @@
-cmake_minimum_required(VERSION 3.15)
-include(ExternalProject)
-set(LUAJIT_SRC ${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT)
-set(LUAJIT_DEST ${CMAKE_CURRENT_BINARY_DIR}/LuaJIT)
+# 
 
-message(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
+#project(LuaJIT C ASM)
+project(luajit-5.1)
+
+set(LUAJIT_DIR ${CMAKE_CURRENT_LIST_DIR}/LuaJIT)
+set(LUAJIT_BLD ${CMAKE_CURRENT_BINARY_DIR}/LuaJIT)
+
+message(STATUS "CMAKE_CURRENT_LIST_DIR = ${CMAKE_CURRENT_LIST_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}")
-message(STATUS "LUAJIT_SRC = ${LUAJIT_SRC}")
-message(STATUS "LUAJIT_DEST = ${LUAJIT_DEST}")
+message(STATUS "LUAJIT_DIR = ${LUAJIT_DIR}")
+message(STATUS "LUAJIT_BLD = ${LUAJIT_BLD}")
 
-if(APPLE)
-    set(DEPLOYMENT_TARGET "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}")
-    ExternalProject_Add(
-        luajitlib
-        BUILD_IN_SOURCE 1
-        SOURCE_DIR ${LUAJIT_SRC}
-        CONFIGURE_COMMAND ${CMAKE_MAKE_PROGRAM} clean
-        BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CC=${DEPLOYMENT_TARGET} amalg
-        INSTALL_COMMAND ""
-    )
-    set(LUAJIT_LIBRARY "libluajit.dylib")
-    #set(LUAJIT_LIBRARY "libluajit.a")
-
-elseif(UNIX)
-    ExternalProject_Add(
-        luajitlib
-        BUILD_IN_SOURCE 1
-        SOURCE_DIR ${LUAJIT_SRC}
-        CONFIGURE_COMMAND ${CMAKE_MAKE_PROGRAM} clean
-        BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} amalg
-        INSTALL_COMMAND ""
-    )
-    set(LUAJIT_LIBRARY "libluajit.a")
-
-elseif(MINGW)
-    set(LUAJIT_BUILDCOMMAND "mingw32-make")
-    ExternalProject_Add(
-        luajitlib
-        BUILD_IN_SOURCE 1
-        SOURCE_DIR ${LUAJIT_SRC}/src
-        CONFIGURE_COMMAND ${LUAJIT_BUILDCOMMAND} clean
-        BUILD_COMMAND ${LUAJIT_BUILDCOMMAND}
-        INSTALL_COMMAND ""
-    )
-    set(LUAJIT_LIBRARY "libluajit-5.1.dll.a")
-
-elseif(MSVC)
-    ExternalProject_Add(
-        luajitlib
-        BUILD_IN_SOURCE 1
-        SOURCE_DIR ${LUAJIT_SRC}
-        #CONFIGURE_COMMAND ${CMAKE_MAKE_PROGRAM} clean
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${LUAJIT_SRC}/src/ ${LUAJIT_SRC}/src/msvcbuild.bat
-        INSTALL_COMMAND ""
-    )
-    set(LUAJIT_LIBRARY "lua51.lib")
-    
+set(LUAJIT_LIB "")
+# Define the library path and filename based on platform
+if(WIN32 AND NOT MINGW)
+  set(LUAJIT_LIB ${LUAJIT_BLD}/bin/libluajit.lib)
 else()
-    message(FATAL_ERROR "Failed to build LuaJIT, unsupported build environment ${CMAKE_SYSTEM_NAME}/${CMAKE_C_COMPILER_ID}")
+  set(LUAJIT_LIB ${LUAJIT_BLD}/bin/libluajit.a)
 endif()
 
-add_library(luajit STATIC IMPORTED GLOBAL)
-set_property(TARGET luajit PROPERTY IMPORTED_LOCATION ${LUAJIT_SRC}/src/${LUAJIT_LIBRARY})
-add_dependencies(luajit luajitlib)
-include_directories(${LUAJIT_SRC}/src)
+if(NOT EXISTS ${LUAJIT_LIB})
+  message(STATUS "Building LuaJIT at CMake time right now")
+  if(APPLE)
+    message(STATUS "./build-fat-luajit.sh ${LUAJIT_BLD} in ${CMAKE_CURRENT_LIST_DIR}")
+    execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      COMMAND ./build-fat-luajit.sh ${LUAJIT_BLD}
+      RESULT_VARIABLE SCRIPT_RESULT
+      OUTPUT_VARIABLE SCRIPT_OUTPUT
+      ERROR_VARIABLE SCRIPT_ERROR)
+  elseif(UNIX)
+    message(STATUS "./build-linux-luajit.sh ${LUAJIT_BLD} in ${CMAKE_CURRENT_LIST_DIR}")
+    execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      COMMAND ./build-linux-luajit.sh ${LUAJIT_BLD}
+      RESULT_VARIABLE SCRIPT_RESULT
+      OUTPUT_VARIABLE SCRIPT_OUTPUT
+      ERROR_VARIABLE SCRIPT_ERROR)
+  elseif(MINGW)
+    message(STATUS "./build-mingw-luajit.sh ${LUAJIT_BLD} in ${CMAKE_CURRENT_LIST_DIR}")
+    execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      COMMAND sh ./build-mingw-luajit.sh ${LUAJIT_BLD}
+      RESULT_VARIABLE SCRIPT_RESULT
+      OUTPUT_VARIABLE SCRIPT_OUTPUT
+      ERROR_VARIABLE SCRIPT_ERROR)
+  elseif(WIN32)
+    # run the bat
+  else()
+    # we are got knows what. Probably error out telling the person to deactivate lua
+    message(FATAL_ERROR "Failed to build LuaJIT. Architecture not supported!")
+  endif()
+  if(${SCRIPT_RESULT} GREATER 0)
+    message(WARNING "Failed to build LuaJIT:")
+    message(WARNING "${SCRIPT_ERROR}")
+    message(WARNING "${SCRIPT_OUTPUT}")
+    message(FATAL_ERROR "LuaJIT build script error!")
+  else()
+    file(GLOB_RECURSE LUACONTENTS "${LUAJIT_BLD}/bin/*")
+    message(STATUS "Succesfully built LuaJIT: ${LUACONTENTS}")
+  endif()
+else()
+  file(GLOB_RECURSE LUACONTENTS "${LUAJIT_BLD}/bin/*")
+  message(STATUS "Using existing LuaJIT library: ${LUACONTENTS}")
+endif()
+
+# Create an INTERFACE library for LuaJIT
+add_library(luajit-5.1 INTERFACE)
+target_link_libraries(luajit-5.1 INTERFACE ${LUAJIT_LIB})
+# Add the include directories
+target_include_directories(luajit-5.1 INTERFACE ${LUAJIT_DIR}/src)

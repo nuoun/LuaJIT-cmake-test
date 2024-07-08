@@ -12,10 +12,10 @@ fi
 mkdir "$BUILD_DIR"
 
 # Run CMake to configure the project
-cmake -B"$BUILD_DIR"
+cmake -B"$BUILD_DIR" #--debug-output -DCMAKE_VERBOSE_MAKEFILE=ON
 
 # Build the project
-cmake --build "$BUILD_DIR"
+cmake --build "$BUILD_DIR" 
 
 # Run the executable
 ./build/luajit-test
