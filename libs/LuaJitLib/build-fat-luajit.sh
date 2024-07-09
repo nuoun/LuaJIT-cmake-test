@@ -17,7 +17,7 @@ mkdir -p "${OD}/arm64"
 mkdir "${OD}/x86_64"
 
 mkdir "${SD}"
-cp -r LuaJIT/ "${SD}"
+cp -r LuaJIT "${SD}"
 
 cd "${SD}/LuaJIT/src"
 
