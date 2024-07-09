@@ -4,12 +4,25 @@
 project(luajit-5.1)
 
 set(LUAJIT_DIR ${CMAKE_CURRENT_LIST_DIR}/LuaJIT)
-set(LUAJIT_BLD ${CMAKE_CURRENT_BINARY_DIR}/luajit)
+set(LUAJIT_BLD ${CMAKE_CURRENT_BINARY_DIR}/LuaJIT)
+set(LUAJIT_INC ${CMAKE_CURRENT_BINARY_DIR}/LuaJIT/src/LuaJIT/src)
+
+# Debugging info
+message(STATUS "CMAKE_MAKE_PROGRAM = ${CMAKE_MAKE_PROGRAM}")
+message(STATUS "CMAKE_COMMAND = ${CMAKE_COMMAND}")
+message(STATUS "C_FLAGS = ${CMAKE_C_FLAGS}")
+message(STATUS "CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
+message(STATUS "CXX_FLAGS_DEBUG = ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS "CXX_FLAGS_RELWITHDEBINFO = ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+message(STATUS "CXX_FLAGS_MINSIZEREL = ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message(STATUS "DEPS_C_COMPILER = ${DEPS_C_COMPILER}")
 
 message(STATUS "CMAKE_CURRENT_LIST_DIR = ${CMAKE_CURRENT_LIST_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "LUAJIT_DIR = ${LUAJIT_DIR}")
 message(STATUS "LUAJIT_BLD = ${LUAJIT_BLD}")
+message(STATUS "LUAJIT_INC = ${LUAJIT_INC}")
 
 set(LUAJIT_LIB "")
 # Define the library filename based on platform
@@ -70,4 +83,4 @@ endif()
 add_library(luajit-5.1 INTERFACE)
 target_link_libraries(luajit-5.1 INTERFACE ${LUAJIT_LIB})
 # Add the include directories
-target_include_directories(luajit-5.1 INTERFACE ${LUAJIT_DIR}/src)
+target_include_directories(luajit-5.1 INTERFACE ${LUAJIT_INC})
