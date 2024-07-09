@@ -1,10 +1,10 @@
-# 
+# LuaJitLib
 
 #project(LuaJIT C ASM)
 project(luajit-5.1)
 
 set(LUAJIT_DIR ${CMAKE_CURRENT_LIST_DIR}/LuaJIT)
-set(LUAJIT_BLD ${CMAKE_CURRENT_BINARY_DIR}/LuaJIT)
+set(LUAJIT_BLD ${CMAKE_CURRENT_BINARY_DIR}/luajit)
 
 message(STATUS "CMAKE_CURRENT_LIST_DIR = ${CMAKE_CURRENT_LIST_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}")
@@ -12,9 +12,9 @@ message(STATUS "LUAJIT_DIR = ${LUAJIT_DIR}")
 message(STATUS "LUAJIT_BLD = ${LUAJIT_BLD}")
 
 set(LUAJIT_LIB "")
-# Define the library path and filename based on platform
+# Define the library filename based on platform
 if(WIN32 AND NOT MINGW)
-  set(LUAJIT_LIB ${LUAJIT_BLD}/bin/libluajit.lib)
+  set(LUAJIT_LIB ${LUAJIT_BLD}/bin/lua51.lib)
 else()
   set(LUAJIT_LIB ${LUAJIT_BLD}/bin/libluajit.a)
 endif()
@@ -43,7 +43,11 @@ if(NOT EXISTS ${LUAJIT_LIB})
       OUTPUT_VARIABLE SCRIPT_OUTPUT
       ERROR_VARIABLE SCRIPT_ERROR)
   elseif(WIN32)
-    # run the bat
+    execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      COMMAND build-msvc-luajit.bat ${LUAJIT_BLD}
+      RESULT_VARIABLE SCRIPT_RESULT
+      OUTPUT_VARIABLE SCRIPT_OUTPUT
+      ERROR_VARIABLE SCRIPT_ERROR)
   else()
     # we are got knows what. Probably error out telling the person to deactivate lua
     message(FATAL_ERROR "Failed to build LuaJIT. Architecture not supported!")

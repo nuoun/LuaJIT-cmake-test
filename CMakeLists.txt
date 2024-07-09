@@ -21,9 +21,7 @@ message(STATUS "CXX_FLAGS_MINSIZEREL = ${CMAKE_CXX_FLAGS_MINSIZEREL}")
 message(STATUS "DEPS_C_COMPILER = ${DEPS_C_COMPILER}")
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/LuaJitLib)
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/LuaJitLib/LuaJIT/src)
 
 add_executable(${PROJECT_NAME} "main.cpp")
 add_dependencies(${PROJECT_NAME} luajit-5.1)
 target_link_libraries(${PROJECT_NAME} luajit-5.1)
-#target_include_directories(${PROJECT_NAME} PRIVATE ${LUAJIT_SRC}/src)

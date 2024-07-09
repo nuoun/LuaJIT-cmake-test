@@ -16,10 +16,10 @@ mkdir -p "${BD}"
 mkdir "${OD}"
 mkdir "${SD}"
 
-cp -r LuaJIT/* "${SD}"
-cd "${SD}/src"
+cp -r LuaJIT/ "${SD}"
+cd "${SD}/LuaJIT/src"
 
-make amalg "BUILDMODE=static"
+make amalg "BUILDMODE=static" || echo "That's OK though"
 
 mv lib*a "${OD}"
 ls -al ${OD}
