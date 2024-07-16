@@ -39,7 +39,7 @@ endfunction()
 
 # Error handling
 function(handle_error message)
-  # Start with outputting debug info
+  # Start with displaying debug info
   print_debug_info()
   # Show error message
   message(WARNING "${message}")
@@ -96,12 +96,12 @@ if(NOT EXISTS "${LUAJIT_LIBRARY}")
     handle_error("Failed to build LuaJIT: Library not found after build attempt!")
   endif()
 
-  # Show content of bin directory if build was succesful
+  # Show contents of bin directory if build was succesful
   file(GLOB_RECURSE LUACONTENTS "${LUAJIT_BUILD_DIR}/bin/*")
   message(STATUS "Successfully built LuaJIT: ${LUACONTENTS}")
 
 else()
-  # Show content of bin directory if existing library was found
+  # Show contents of bin directory if existing library was found
   file(GLOB_RECURSE LUACONTENTS "${LUAJIT_BUILD_DIR}/bin/*")
   message(STATUS "Using existing LuaJIT library: ${LUACONTENTS}")
 endif()

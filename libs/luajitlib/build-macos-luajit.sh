@@ -21,7 +21,7 @@ mkdir -p "${OD}/arm64" || error=1
 mkdir "${OD}/x86_64" || error=1
 mkdir "${HD}" || error=1
 
-# LuaJIT's top level makefile also has Darwin specific config so build from the top source directory
+# LuaJIT's top level makefile also has Darwin specific config so we build from the top source directory
 cp -r LuaJIT "${SD}" || error=1
 cd "${SD}/LuaJIT" || error=1
 
