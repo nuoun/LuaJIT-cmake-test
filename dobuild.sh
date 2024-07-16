@@ -18,4 +18,4 @@ cmake -B"$BUILD_DIR" #--debug-output -DCMAKE_VERBOSE_MAKEFILE=ON
 cmake --build "$BUILD_DIR" 
 
 # Run the executable
-./build/luajit-test
+./build/luajitlib-test

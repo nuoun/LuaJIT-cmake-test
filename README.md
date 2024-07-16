@@ -1,11 +1,11 @@
-# LuaJIT-cmake-test
+# luajitlib
 
 ## To build
-git clone https://github.com/nuoun/LuaJIT-cmake-test.git  
-cd LuaJIT-cmake-test  
-git submodule update --init --recursive  
-cmake -Bbuild  
+git clone https://github.com/nuoun/luajitlib.git
+cd luajitlib
+git submodule update --init --recursive
+cmake -Bbuild
 cmake --build build
 
 ## Test
-./build/luajit-test
+./build/luajitlib-test
