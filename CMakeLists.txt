@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 project(luajitlib-test)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/LuaJitLib)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/luajitlib)
 
 add_executable(${PROJECT_NAME} "main.cpp")
 add_dependencies(${PROJECT_NAME} luajit-5.1)
